@@ -9,7 +9,7 @@ window.$ = $;
 
 const socket = io(config.SERVER_URL);
 socket.on('connect', () => {
-  console.log("connected");
+  console.log('connected');
 });
 // const socket = io.connect(`${config.SERVER_URL}/socket.io/socket.io.js`);
 // socket.connect('connect', () => {
