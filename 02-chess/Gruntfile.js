@@ -38,7 +38,7 @@ module.exports = function(grunt) {
       server: {
         options: {
           base: './dist',
-          hostname: '0.0.0.0',
+          hostname: 'localhost',
           livereload: true,
           open: true,
           port: 3000,
@@ -86,7 +86,7 @@ module.exports = function(grunt) {
             expand: true,
             cwd: './node_modules/chessboardjs/www/img',
             src: '**/*',
-            dest: './dist/images'
+            dest: './dist/img'
           },
           // html
           {
@@ -94,6 +94,13 @@ module.exports = function(grunt) {
             cwd: 'src',
             src: '*.html',
             dest: './dist/'
+          },
+          // bootstrap
+          {
+            expand: true,
+            cwd: './node_modules/bootstrap/dist/css',
+            src: '*.css',
+            dest: './dist/styles'
           }
         ]
 
