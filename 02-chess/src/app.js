@@ -19,3 +19,15 @@ socket.on('connect', () => {
 const board = ChessBoard('board', 'start');
 // Resize board based on window size
 $(window).resize(board.resize);
+
+// Events
+socket.on('game created', (data) => {
+  const gameId = data.game.id;
+  console.log(`Game id: ${gameId}`);
+});
+
+// Buttons
+$('#btn_create-game').on('click', (event) => {
+  event.preventDefault();
+  socket.emit('new game');
+});
