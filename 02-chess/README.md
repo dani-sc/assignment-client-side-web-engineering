@@ -8,6 +8,10 @@
 * Use [chessboardjs](https://www.npmjs.com/package/chessboardjs) and [chess.js](https://www.npmjs.com/package/chess.js)
 * Read server docs.
 
+### Notes by me
+* When creating a game, you automatically join it as well.
+* As soon as another player joins the game, the game started event is emitted.
+
 ## Setup
 
 ```bash
@@ -49,7 +53,7 @@ Consume events or emit commands to create a game.
     move: <move in SAN notation>
   }
   ```
-  
+
 * `socket.emit('restart')`
 * `socket.emit('undo')`
 

@@ -11,22 +11,44 @@
         <div id="board" class="col-md-8"></div>
         <div class"col-md-4" style="border: 1px solid black">test</div>
       </div>
-    </div>
-    <div class="dialog">
-      <div class="row" style="border: 1px solid black">
-        <div class="col-md-6">
-          <h3>Join Game</h3>
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Room Identifier (e.g. 540a53)">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button">Go!</button>
-            </span>
+      <!-- MODAL JOIN OR CREATE GAME START -->
+      <div id="modal_joinOrCreateGame" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalJoinOrCreateGame">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="row" style="border: 1px solid black">
+                <div class="col-md-8">
+                  <h3>Join Game</h3>
+                  <div class="input-group input-group-lg">
+                    <input id="txt_game-id" type="text" class="form-control" placeholder="Room Identifier (e.g. 540a53)">
+                    <span class="input-group-btn">
+                      <button id="btn_join-game" class="btn btn-default" type="button">Go!</button>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <button id="btn_create-game" type="button" class="btn btn-default btn-lg">Create new Game</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <button id="btn_create-game" type="button" class="btn btn-default btn-lg align-middle">Create new Game</button>
+      </div>
+      <!-- MODAL JOIN OR CREATE GAME END -->
+      <!-- MODAL NOTIFICATION START -->
+      <div id="modal_notification" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalNotification">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <div id="dialog_notification__header"></div>
+            </div>
+            <div class="modal-body">
+              <div id="dialog_notification__content"></div>
+            </div>
+          </div>
         </div>
       </div>
+      <!-- MODAL NOTIFICATION END -->
     </div>
     <script type="text/javascript" src="app.js"></script>
   </body>

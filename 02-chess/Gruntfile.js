@@ -101,6 +101,12 @@ module.exports = function(grunt) {
             cwd: './node_modules/bootstrap/dist/css',
             src: '*.css',
             dest: './dist/styles'
+          },
+          {
+            expand: true,
+            cwd: './node_modules/bootstrap/dist/js',
+            src: '*.js',
+            dest: './dist/js'
           }
         ]
 
