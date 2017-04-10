@@ -25,6 +25,7 @@ const onMove = (status, move) => {
   socket.emit('move', {
     move: move.san,
   });
+  update();
 };
 
 // let board = ChessBoard('board');
@@ -48,6 +49,25 @@ $(window).resize(board.resize);
 //   // Resize board based on window size
 //   $(window).resize(board.resize);
 // }
+
+function update()  {
+  console.log(`updating...`);
+  updateHistory();
+  console.log('after update history');
+}
+
+function updateHistory() {
+  console.log(`Updating History`);
+  const listOfMoves = game.pgn().split(/ ?[0-9]+\. /);
+  listOfMoves.shift();
+  console.log(game.pgn());
+  // console.log(`pgn split: ${game.pgn().split(/ ?[0-9]+\. /)`);
+  let html = '';
+  listOfMoves.forEach((move) => {
+    html += `<li>${move}</li>`;
+  });
+  $('#history').html(html);
+}
 
 /* SOCKETS */
 const socket = io(config.SERVER_URL);
@@ -79,7 +99,7 @@ function hideNotification() {
 socket.on('game created', (data) => {
   const gameId = data.game.id;
   console.log(`Game created, game id: ${gameId}`);
-  showNotification('Game created', `A game with following Identifier has been created: ${gameId}. The game starts as soon as someone else joins.`);
+  showNotification('Game created', `A game with following Identifier has been created: ${gameId} The game starts as soon as someone else joins.`);
 });
 
 socket.on('game joined', (data) => {
@@ -117,6 +137,7 @@ socket.on('move', (data) => {
   const move = game.move(data.move);
   board.move(`${move.from}-${move.to}`);
   board.position(game.fen());
+  update();
 });
 
 /* ----------------------- */
