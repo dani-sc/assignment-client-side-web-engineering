@@ -1,19 +1,18 @@
 import { Chess } from 'chess.js';
 import ChessBoard from 'chessboardjs';
-import _ from 'lodash';
 import $ from 'jquery';
 import io from 'socket.io-client';
 import config from './config';
 
 // Add jquery to window, because chessboardjs and bootstrap need that
-window.jQuery = window.$ = $;
+window.jQuery = window.$ = $; // eslint-disable-line no-multi-assign
 require('bootstrap');
 
 /* -------------------------------------------------------------------- */
 /* Create game which contains the Chess logic, and initialize the board */
 /* -------------------------------------------------------------------- */
 const game = new Chess();
-let player = {};
+const player = {};
 
 const onDragStart = (source, piece) => {
   if (game.game_over() === true
@@ -36,6 +35,9 @@ const onDrop = (source, target) => {
 
   // illegal move
   if (move === null) return 'snapback';
+
+  removeHighlights(player.color);
+  setHighlights(player.color, source, target);
 
   update();
   socket.emit('move', {
@@ -114,6 +116,20 @@ function updateHistory() {
     html += `<li>${move}</li>`;
   });
   $('#history').html(html);
+}
+
+/* ---------------------------------------- */
+/* Past Moves Highlighting Helper Functions */
+/* ---------------------------------------- */
+function setHighlights(color, moveFrom, moveTo) {
+  const $board = $('#board');
+  $board.find(`.square-${moveFrom}`).addClass(`highlight-${color}`);
+  $board.find(`.square-${moveTo}`).addClass(`highlight-${color}`);
+}
+
+function removeHighlights(color) {
+  $('#board').find('.square-55d63')
+    .removeClass(`highlight-${color}`);
 }
 
 /* ----------------------------------------- */
@@ -201,6 +217,14 @@ socket.on('move', (data) => {
   const move = game.move(data.move);
   board.move(`${move.from}-${move.to}`);
   board.position(game.fen());
+
+  let otherPlayersColor = 'white';
+  if (player.color === 'white') {
+    otherPlayersColor = 'black';
+  }
+  removeHighlights(otherPlayersColor);
+  setHighlights(otherPlayersColor, move.from, move.to);
+
   update();
 });
 
