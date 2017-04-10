@@ -3,34 +3,67 @@
   <head>
     <link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="styles/chessboard.css">
+    <style>
+      #history-header {
+        text-align: center;
+      }
+
+      #history {
+        border-right: 1px solid black;
+      }
+
+      #game-status {
+        font-size: 2em;
+        margin-bottom: 1em;
+        color: firebrick;
+      }
+
+      #modal_joinOrCreateGame__createGame {
+        text-align: center;
+      }
+
+      #dialog_gameCreated__header {
+        font-size: 2em;
+      }
+
+      #dialog_gameCreated__content {
+        margin-bottom: 2em;
+      }
+
+      .headline-main {
+        border-bottom: 1px dashed black;
+        margin-bottom: 1em;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <h1>04-chess</h4>
+    <h1 class="headline-main">Chess</h4>
     <div class="container">
+      <div id="game-status"></div>
       <div class="row">
         <div id="board" class="col-md-8"></div>
-        <div class"col-md-4" style="border: 1px solid black">
-          <h2>History</h2>
+        <div class="col-md-4">
+          <h2 id="history-header">History</h2>
           <ol id="history"></ol>
         </div>
       </div>
       <!-- MODAL JOIN OR CREATE GAME START -->
-      <div id="modal_joinOrCreateGame" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalJoinOrCreateGame">
-        <div class="modal-dialog" role="document">
+      <div id="modal_joinOrCreateGame" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-body">
-              <div class="row" style="border: 1px solid black">
+              <div class="row">
                 <div class="col-md-8">
-                  <h3>Join Game</h3>
                   <div class="input-group input-group-lg">
                     <input id="txt_game-id" type="text" class="form-control" placeholder="Room Identifier (e.g. 540a53)">
                     <span class="input-group-btn">
-                      <button id="btn_join-game" class="btn btn-default" type="button">Go!</button>
+                      <button id="btn_join-game" class="btn btn-primary" type="button">Join Game</button>
                     </span>
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <button id="btn_create-game" type="button" class="btn btn-default btn-lg">Create new Game</button>
+                <div class="col-md-4" id="modal_joinOrCreateGame__createGame">
+                  <button id="btn_create-game" type="button" class="btn btn-primary btn-lg">Create new Game</button>
                 </div>
               </div>
             </div>
@@ -38,20 +71,24 @@
         </div>
       </div>
       <!-- MODAL JOIN OR CREATE GAME END -->
-      <!-- MODAL NOTIFICATION START -->
-      <div id="modal_notification" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalNotification">
+      <!-- MODAL GAME_CREATED START -->
+      <div id="modal_gameCreated" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <div id="dialog_notification__header"></div>
+              <div id="dialog_gameCreated__header"></div>
             </div>
             <div class="modal-body">
-              <div id="dialog_notification__content"></div>
+              <div id="dialog_gameCreated__content"></div>
+              <div class="input-group input-group-lg">
+                <span class="input-group-addon">Game ID:</span>
+                <input id="dialog_gameCreated__gameid" type="text" class="form-control">
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- MODAL NOTIFICATION END -->
+      <!-- MODAL GAME_CREATED END -->
     </div>
     <script type="text/javascript" src="app.js"></script>
   </body>

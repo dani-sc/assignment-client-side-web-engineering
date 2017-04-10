@@ -37,11 +37,10 @@ const onDrop = (source, target) => {
   // illegal move
   if (move === null) return 'snapback';
 
-  const status = updateStatus(game);
+  update();
   socket.emit('move', {
     move: move.san,
   });
-  update();
 };
 
 const onSnapEnd = () => {
@@ -77,6 +76,11 @@ let board = ChessBoard('board', {
 // Resize board based on window size
 $(window).resize(board.resize);
 
+function update() {
+  updateStatus();
+  updateHistory();
+}
+
 function updateStatus() {
   let status = '';
 
@@ -98,11 +102,7 @@ function updateStatus() {
     }
   }
 
-  return status;
-}
-
-function update() {
-  updateHistory();
+  $('#game-status').text(status);
 }
 
 function updateHistory() {
@@ -143,14 +143,19 @@ $('#modal_joinOrCreateGame').modal({
   show: true,
 });
 
-function showNotification(title, text) {
-  $('#dialog_notification__header').text(title);
-  $('#dialog_notification__content').text(text);
-  $('#modal_notification').modal();
+function showGameCreatedModal(gameId) {
+  $('#dialog_gameCreated__header').text('Game created');
+  $('#dialog_gameCreated__content').text('A game with following identifier has been created. The game starts as soon as someone else joins.');
+  $('#dialog_gameCreated__gameid').val(gameId);
+  $('#modal_gameCreated').modal({
+    backdrop: 'static',
+    keyboard: false,
+    show: true,
+  });
 }
 
-function hideNotification() {
-  $('#modal_notification').modal('hide');
+function hideGameCreatedModal() {
+  $('#modal_gameCreated').modal('hide');
 }
 
 /* -------------------------- */
@@ -158,47 +163,41 @@ function hideNotification() {
 /* -------------------------- */
 const socket = io(config.SERVER_URL);
 socket.on('connect', () => {
-  console.log('connected');
+  // eslint-disable-next-line no-console
+  console.log('Connected to game server');
 });
+
+// Join game if game id in pathname
+if (window.location.pathname.length > 1) {
+  const gameId = window.location.pathname.substr(1);
+  socket.emit('join game', { game: gameId });
+  $('#modal_joinOrCreateGame').modal('hide');
+}
 
 socket.on('game created', (data) => {
   const gameId = data.game.id;
-  console.log(`Game created, game id: ${gameId}`);
-  showNotification('Game created', `A game with following Identifier has been created: ${gameId} The game starts as soon as someone else joins.`);
+  showGameCreatedModal(gameId);
+  window.history.pushState(null, `Chess - Game ${gameId}`, `/${gameId}`);
 });
 
 socket.on('game joined', (data) => {
   const gameId = data.game.id;
-  console.log(`Game joined, game id: ${gameId}`);
+  window.history.pushState(null, `Chess - Game ${gameId}`, `/${gameId}`);
 
-  const playerColor = data.player.color;
-  console.log(`Youre player color is ${playerColor}`);
-  // player = data.player;
   player.color = data.player.color;
-  // setupBoard();
+
   game.load_pgn(data.game.pgn);
   board.position(data.game.fen, false);
-  board.orientation(playerColor);
+  board.orientation(player.color);
 
-
-  console.log(player);
+  update();
 });
 
 socket.on('game started', () => {
-  hideNotification();
-  console.log(`Game started`);
-});
-
-socket.on('undo', () => {
-  console.log(`Received: Undo`);
-});
-
-socket.on('restart', () => {
-  console.log(`Received: Restart`);
+  hideGameCreatedModal();
 });
 
 socket.on('move', (data) => {
-  console.log(`Received: move`);
   const move = game.move(data.move);
   board.move(`${move.from}-${move.to}`);
   board.position(game.fen());
