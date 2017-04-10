@@ -4,7 +4,6 @@ import _ from 'lodash';
 import $ from 'jquery';
 import io from 'socket.io-client';
 import config from './config';
-import chessGame from './chessGame';
 
 // Add jquery to window, because chessboardjs and bootstrap need that
 window.jQuery = window.$ = $;
@@ -16,52 +15,100 @@ require('bootstrap');
 const game = new Chess();
 let player = {};
 
-const onSnapEnd = () => {
-  board.position(game.fen());
+const onDragStart = (source, piece) => {
+  if (game.game_over() === true
+    || (game.turn() === 'w' && piece.search(/^b/) !== -1)
+    || (game.turn() === 'b' && piece.search(/^w/) !== -1)
+    || (game.turn() === 'w' && player.color === 'black')
+    || (game.turn() === 'b' && player.color === 'white')) {
+    return false;
+  }
+  return true;
 };
 
-const onMove = (status, move) => {
-  console.log("new status: " + status);
+const onDrop = (source, target) => {
+  // see if the move is legal
+  const move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q',
+  });
+
+  // illegal move
+  if (move === null) return 'snapback';
+
+  const status = updateStatus(game);
   socket.emit('move', {
     move: move.san,
   });
   update();
 };
 
-// let board = ChessBoard('board');
-// $(window).resize(board.resize);
+const onSnapEnd = () => {
+  board.position(game.fen());
+};
+
+const onMouseoverSquare = (square) => {
+  const moves = game.moves({
+    square,
+    verbose: true,
+  });
+
+  if (moves.length === 0) {
+    return;
+  }
+
+  highlightSquare(square);
+  moves.forEach(move => highlightSquare(move.to));
+};
+
+const onMouseoutSquare = () => {
+  removeHighlightedSquares();
+};
+
 let board = ChessBoard('board', {
   draggable: true,
-  onDragStart: chessGame.onDragStartFactory(game, player),
-  onDrop: chessGame.onDropFactory(game, onMove),
+  onDragStart,
+  onDrop,
   onSnapEnd,
+  onMouseoutSquare,
+  onMouseoverSquare,
 });
 // Resize board based on window size
 $(window).resize(board.resize);
 
-// function setupBoard() {
-//   board = ChessBoard('board', {
-//     draggable: true,
-//     onDragStart: chessGame.onDragStartFactory(game, player),
-//     onDrop: chessGame.onDropFactory(game, onMove),
-//     onSnapEnd,
-//   });
-//   // Resize board based on window size
-//   $(window).resize(board.resize);
-// }
+function updateStatus() {
+  let status = '';
 
-function update()  {
-  console.log(`updating...`);
+  let moveColor = 'White';
+  if (game.turn() === 'b') {
+    moveColor = 'Black';
+  }
+
+  if (game.in_checkmate() === true) { // checkmate?
+    status = `Game over, ${moveColor} is in checkmate.`;
+  } else if (game.in_draw() === true) { // draw?
+    status = 'Game over, drawn position';
+  } else { // game still on
+    status = `${moveColor} to move`;
+
+    // check?
+    if (game.in_check() === true) {
+      status += `, ${moveColor} is in check`;
+    }
+  }
+
+  return status;
+}
+
+function update() {
   updateHistory();
-  console.log('after update history');
 }
 
 function updateHistory() {
-  console.log(`Updating History`);
   const listOfMoves = game.pgn().split(/ ?[0-9]+\. /);
   listOfMoves.shift();
-  console.log(game.pgn());
-  // console.log(`pgn split: ${game.pgn().split(/ ?[0-9]+\. /)`);
+
   let html = '';
   listOfMoves.forEach((move) => {
     html += `<li>${move}</li>`;
@@ -69,16 +116,27 @@ function updateHistory() {
   $('#history').html(html);
 }
 
-/* SOCKETS */
-const socket = io(config.SERVER_URL);
-socket.on('connect', () => {
-  console.log('connected');
-});
+/* ----------------------------------------- */
+/* Legal Moves Highlighting Helper Functions */
+/* ----------------------------------------- */
+function removeHighlightedSquares() {
+  $('#board .square-55d63').css('background', '');
+}
 
+function highlightSquare(square) {
+  const $square = $(`#board .square-${square}`);
 
+  let background = '#a9a9a9';
+  if ($square.hasClass('black-3c85d')) {
+    background = '#696969';
+  }
 
+  $square.css('background', background);
+}
 
-// Dialogs
+/* ------- */
+/* Dialogs */
+/* ------- */
 $('#modal_joinOrCreateGame').modal({
   backdrop: 'static',
   keyboard: false,
@@ -95,7 +153,14 @@ function hideNotification() {
   $('#modal_notification').modal('hide');
 }
 
-// Events
+/* -------------------------- */
+/* Sockets with Event Handler */
+/* -------------------------- */
+const socket = io(config.SERVER_URL);
+socket.on('connect', () => {
+  console.log('connected');
+});
+
 socket.on('game created', (data) => {
   const gameId = data.game.id;
   console.log(`Game created, game id: ${gameId}`);
@@ -145,9 +210,7 @@ socket.on('move', (data) => {
 /* ----------------------- */
 $('#btn_create-game').on('click', (event) => {
   event.preventDefault();
-
   socket.emit('new game');
-
   $('#modal_joinOrCreateGame').modal('hide');
 });
 
