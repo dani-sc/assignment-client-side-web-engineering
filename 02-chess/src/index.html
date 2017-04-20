@@ -18,6 +18,10 @@
         color: firebrick;
       }
 
+      .button-area {
+        text-align: center;
+      }
+
       #modal_joinOrCreateGame__createGame {
         text-align: center;
       }
@@ -51,6 +55,9 @@
       <div class="row">
         <div id="board" class="col-md-8"></div>
         <div class="col-md-4">
+          <div class="button-area">
+            <button id="btn_restart-game" type="button" class="btn btn-primary btn-lg">Restart Game</button>
+          </div>
           <h2 id="history-header">History</h2>
           <ol id="history"></ol>
         </div>

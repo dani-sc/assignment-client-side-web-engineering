@@ -174,6 +174,14 @@ function hideGameCreatedModal() {
   $('#modal_gameCreated').modal('hide');
 }
 
+function resetGameLocally() {
+  game.reset();
+  board.position(game.fen(), false);
+  update();
+  removeHighlights('white');
+  removeHighlights('black');
+}
+
 /* -------------------------- */
 /* Sockets with Event Handler */
 /* -------------------------- */
@@ -228,6 +236,10 @@ socket.on('move', (data) => {
   update();
 });
 
+socket.on('restart', () => {
+  resetGameLocally();
+});
+
 /* ----------------------- */
 /* Buttons onClick handler */
 /* ----------------------- */
@@ -244,4 +256,12 @@ $('#btn_join-game').on('click', (event) => {
   socket.emit('join game', { game: gameId });
 
   $('#modal_joinOrCreateGame').modal('hide');
+});
+
+$('#btn_restart-game').on('click', (event) => {
+  event.preventDefault();
+
+  resetGameLocally();
+
+  socket.emit('restart');
 });
