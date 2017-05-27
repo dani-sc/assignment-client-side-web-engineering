@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+const Typeahead = require('react-typeahead').Typeahead;
 
 class App extends Component {
   render() {
@@ -13,6 +14,10 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
+        <Typeahead
+          options={['John', 'Paul', 'George', 'Ringo']}
+          maxVisible={2}
+        />
       </div>
     );
   }

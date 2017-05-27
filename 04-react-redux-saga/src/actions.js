@@ -1,0 +1,1 @@
+export const SHOW_HELLO_WORLD = 'HELLO_WORLD';
