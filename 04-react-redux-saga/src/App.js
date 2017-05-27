@@ -4,13 +4,9 @@ import logo from './logo.svg';
 import './App.css';
 import { connect } from 'react-redux';
 import { fetchDrivers } from './actions'
-const Typeahead = require('react-typeahead').Typeahead;
+import {Typeahead} from 'react-bootstrap-typeahead';
 
 class App extends Component {
-  componentDidUpdate() {
-    console.log("DID UPDATE");
-    this.pls.focus();
-  }
   render() {
     const { constructors, fetchDrivers, drivers } = this.props;
 
@@ -25,12 +21,10 @@ class App extends Component {
         </p>
         <h4>{`${constructors ? constructors.length : 0} constructors loaded`}</h4>
         <Typeahead
-          ref='pls'
+          onChange={fetchDrivers}
           options={constructors}
-          placeholder="Enter constructor's name"
-          filterOption='name'
-          displayOption='name'
-          onOptionSelected={fetchDrivers}
+          labelKey='name'
+          autoFocus
         />
         <h4>{`${drivers ? drivers.length : 0} drivers found`}</h4>
         <table>
@@ -80,7 +74,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchDrivers: (constructor) => {
-    dispatch(fetchDrivers(constructor.constructorId));
+    if (constructor[0]) {
+      dispatch(fetchDrivers(constructor[0].constructorId));
+    }
   }
 });
 

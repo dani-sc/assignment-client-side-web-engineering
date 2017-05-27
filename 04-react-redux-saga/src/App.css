@@ -22,3 +22,12 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.bootstrap-typeahead {
+  width: 50em;
+  margin: auto;
+}
+
+.dropdown-menu {
+  width: 50em;
+}
