@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { connect } from 'react-redux';
 const Typeahead = require('react-typeahead').Typeahead;
 
 class App extends Component {
   render() {
+    const { constructors } = this.props;
+
     return (
       <div className="App">
         <div className="App-header">
@@ -15,12 +18,22 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         <Typeahead
-          options={['John', 'Paul', 'George', 'Ringo']}
-          maxVisible={2}
+          options={constructors}
+          placeholder="Enter constructor's name"
+          filterOption='name'
+          displayOption='name'
         />
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  constructors: state.constructors,
+});
+
+const mapDispatchToProps = dispatch => ({
+  
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

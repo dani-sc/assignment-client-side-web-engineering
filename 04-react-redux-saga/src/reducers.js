@@ -1,4 +1,4 @@
-import { SHOW_HELLO_WORLD } from './actions'
+import * as types from './actionTypes';
 
 const initialState = {
   constructors: [],
@@ -6,8 +6,10 @@ const initialState = {
 
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SHOW_HELLO_WORLD: {
-      return state;
+    case types.LOAD_CONSTRUCTORS_SUCCESS: {
+      return Object.assign({}, state, {
+        constructors: action.constructors
+      });
     }
     default: {
       return state;
