@@ -1,15 +1,28 @@
-import { put, takeEvery, all, call } from 'redux-saga/effects'
+import { put, takeLatest, takeEvery, all, call, select } from 'redux-saga/effects'
+import { delay } from 'redux-saga';
 import request from './request'
 import * as types from './actionTypes'
-import { constructorsFetched, driversFetched } from './actions'
+import * as actions from './actions'
+// import { getConstructorsLength } from './selectors'
 
-function* fetchConstructors() {
+function* fetchConstructors({offset} = {}) {
   // Get all constructors from API, so we can fill typeahead with the right data
-  const response = yield call(request, 'http://ergast.com/api/f1/constructors.json?limit=500');
+  // The easiest and most efficient way would be to just add ?limit=500, but that's not allowed in this exercise
+
+  if (offset === undefined) offset = 0;
+  const response = yield call(request, `http://ergast.com/api/f1/constructors.json?offset=${offset}`);
   const constructors = response.MRData.ConstructorTable.Constructors;
-  console.log("entered getConstructors");
-  console.log(constructors);
-  yield put(constructorsFetched(constructors));
+  yield put(actions.constructorsFetched(constructors));
+  
+  const numberOfConstructorsFetched = offset + constructors.length;
+  const totalNumberOfConstructors = response.MRData.total;
+  if (numberOfConstructorsFetched < totalNumberOfConstructors) {
+    yield put(actions.fetchConstructors(numberOfConstructorsFetched));
+  }
+}
+
+function* watchFetchConstructors() {
+  yield takeEvery(types.FETCH_CONSTRUCTORS, fetchConstructors);
 }
 
 function* fetchDrivers({constructorId}) {
@@ -17,17 +30,18 @@ function* fetchDrivers({constructorId}) {
   const response = yield call(request, `http://ergast.com/api/f1/constructors/${constructorId}/drivers.json?limit=500`)
   const drivers = response.MRData.DriverTable.Drivers;
   console.log(drivers);
-  yield put(driversFetched(drivers));
+  yield put(actions.driversFetched(drivers));
 }
 
 function* watchFetchDrivers() {
   console.log('watch fetch drivers');
-  yield takeEvery(types.FETCH_DRIVERS, fetchDrivers);
+  yield takeLatest(types.FETCH_DRIVERS, fetchDrivers);
 }
 
 export default function* rootSaga() {
   yield all([
     fetchConstructors(),
+    watchFetchConstructors(),
     watchFetchDrivers(),
   ])
 }

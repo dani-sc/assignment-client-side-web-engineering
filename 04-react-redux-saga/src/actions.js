@@ -1,5 +1,12 @@
 import * as types from './actionTypes';
 
+export function fetchConstructors(offset) {
+  return {
+    type: types.FETCH_CONSTRUCTORS,
+    offset,
+  }
+}
+
 export function constructorsFetched(constructors) {
   return {
     type: types.FETCH_CONSTRUCTORS_SUCCESS,

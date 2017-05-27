@@ -8,14 +8,16 @@ const initialState = {
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.FETCH_CONSTRUCTORS_SUCCESS: {
-      return Object.assign({}, state, {
-        constructors: action.constructors
-      });
+      return {
+        ...state,
+        constructors: [...state.constructors, ...action.constructors],
+      };
     }
     case types.FETCH_DRIVERS_SUCCESS: {
-      return Object.assign({}, state, {
+      return {
+        ...state,
         drivers: action.drivers
-      });
+      }
     }
     default: {
       return state;

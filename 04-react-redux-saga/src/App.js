@@ -7,6 +7,10 @@ import { fetchDrivers } from './actions'
 const Typeahead = require('react-typeahead').Typeahead;
 
 class App extends Component {
+  componentDidUpdate() {
+    console.log("DID UPDATE");
+    this.pls.focus();
+  }
   render() {
     const { constructors, fetchDrivers, drivers } = this.props;
 
@@ -19,14 +23,16 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
+        <h4>{`${constructors ? constructors.length : 0} constructors loaded`}</h4>
         <Typeahead
+          ref='pls'
           options={constructors}
           placeholder="Enter constructor's name"
           filterOption='name'
           displayOption='name'
           onOptionSelected={fetchDrivers}
         />
-        <h4>{`${drivers.length} drivers found`}</h4>
+        <h4>{`${drivers ? drivers.length : 0} drivers found`}</h4>
         <table>
           <thead>
             <tr>
