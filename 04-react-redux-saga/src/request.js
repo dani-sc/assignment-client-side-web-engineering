@@ -33,10 +33,6 @@ function checkStatus(response) {
   throw error;
 }
 
-function map(responseJson) {
-  return responseJson.MRData.ConstructorTable.Constructors;
-}
-
 /**
  * Requests a URL, returning a promise
  *
@@ -48,6 +44,5 @@ function map(responseJson) {
 export default function request(url, options) {
   return fetch(url, options)
     .then(checkStatus)
-    .then(parseJSON)
-    .then(map);
+    .then(parseJSON);
 }
