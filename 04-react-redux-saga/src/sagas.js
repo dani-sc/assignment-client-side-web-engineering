@@ -1,9 +1,7 @@
-import { put, takeLatest, takeEvery, all, call, select } from 'redux-saga/effects'
-import { delay } from 'redux-saga';
+import { put, takeEvery, all, call, throttle } from 'redux-saga/effects'
 import request from './request'
 import * as types from './actionTypes'
 import * as actions from './actions'
-// import { getConstructorsLength } from './selectors'
 
 function* fetchConstructors({offset} = {}) {
   // Get all constructors from API, so we can fill typeahead with the right data
@@ -26,16 +24,15 @@ function* watchFetchConstructors() {
 }
 
 function* fetchDrivers({constructorId}) {
-  console.log(`fetching drivers for ${constructorId}`);
   const response = yield call(request, `http://ergast.com/api/f1/constructors/${constructorId}/drivers.json?limit=500`)
   const drivers = response.MRData.DriverTable.Drivers;
-  console.log(drivers);
   yield put(actions.driversFetched(drivers));
 }
 
 function* watchFetchDrivers() {
-  console.log('watch fetch drivers');
-  yield takeLatest(types.FETCH_DRIVERS, fetchDrivers);
+  // Does not really make sense to throttle here, but it's part of the exercise
+  // See explanation at https://github.com/redux-saga/redux-saga/blob/master/docs/recipes/README.md
+  yield throttle(500, types.FETCH_DRIVERS, fetchDrivers);
 }
 
 export default function* rootSaga() {

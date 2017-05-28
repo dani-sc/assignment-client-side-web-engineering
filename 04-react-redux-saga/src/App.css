@@ -24,10 +24,10 @@
 }
 
 .bootstrap-typeahead {
-  width: 50em;
+  width: 75%;
   margin: auto;
 }
 
 .dropdown-menu {
-  width: 50em;
+  width: 100%;
 }

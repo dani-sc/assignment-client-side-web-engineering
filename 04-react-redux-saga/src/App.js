@@ -4,7 +4,7 @@ import logo from './logo.svg';
 import './App.css';
 import { connect } from 'react-redux';
 import { fetchDrivers } from './actions'
-import {Typeahead} from 'react-bootstrap-typeahead';
+import { Typeahead } from 'react-bootstrap-typeahead';
 
 class App extends Component {
   render() {
@@ -14,10 +14,10 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+          <h2>Professional Formula 1 Driver Search</h2>
         </div>
         <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
+          To get started, search in the professional search field below for constructors, which will be displayed professionally.
         </p>
         <h4>{`${constructors ? constructors.length : 0} constructors loaded`}</h4>
         <Typeahead
@@ -25,9 +25,10 @@ class App extends Component {
           options={constructors}
           labelKey='name'
           autoFocus
+          minLength={1}
         />
         <h4>{`${drivers ? drivers.length : 0} drivers found`}</h4>
-        <table>
+        <table className='table table-striped'>
           <thead>
             <tr>
               <th>First Name</th>
@@ -67,11 +68,10 @@ App.defaultProps = {
   drivers: [{}],
 };
 
-const mapStateToProps = state => ({
-  constructors: state.constructors,
-  drivers: state.drivers,
+const mapStateToProps = ({ constructors, drivers }) => ({
+  constructors,
+  drivers,
 });
-
 const mapDispatchToProps = dispatch => ({
   fetchDrivers: (constructor) => {
     if (constructor[0]) {
