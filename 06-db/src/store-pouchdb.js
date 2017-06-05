@@ -130,8 +130,11 @@ export default class Store {
 
             todos.forEach(todo => {
                 for (const k in query) {
-                    // While query[k] is a number, todo[k] is a string. Let's cast.
-                    if (query[k].toString() === todo[k]) {
+                    // If k is id: While query[k] is a number, todo[k] is a string. Let's cast.
+                    // However, k may be completed; in that case it would be a boolean value.
+                    // To ensure that it won't break, even if there would be other queries in the future,
+                    // just cast both sides to String.
+                    if (query[k].toString() === todo[k].toString()) {
                         todosToDelete.push(todo)
                         return
                     }
@@ -148,10 +151,15 @@ export default class Store {
                 _rev: todo._rev,
                 _deleted: true
             }))
+            console.log(todosToDelete);
 
             localDB
                 .bulkDocs(todosToDelete)
-                .then(() => callback(todosToKeep))
+                .then(() => {
+                    console.log(`all removed. todostokeep:`);
+                    console.log(todosToKeep);
+                    callback(todosToKeep)
+                })
         })
     }
 
