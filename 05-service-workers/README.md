@@ -39,3 +39,9 @@ Alle Zeitangaben in Sekunden
 
 Mit Service-Workers ist die Seite auch vollständig benutzbar, wenn man offline ist. Nur ein paar Sachen, wie google analytics, können aber nicht geladen werden (was wohl auch die Ergebnis-Tabelle oben ein wenig beeinflusst hat.)
 
+# Screenshots
+## Ohne Cache
+![Ohne Cache](screenshot_no_serviceworkers.png)
+# Mit Service-Workers
+![Mit Service-Workers](screenshot_with_serviceworkers.png)
+
